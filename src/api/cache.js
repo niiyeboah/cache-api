@@ -2,9 +2,8 @@ import express, { Router } from "express";
 import Entry from "../models/entry";
 import loremIpsum from "lorem-ipsum";
 
-export default config => {
+export default ({ ttl, limit }) => {
   const cache = Router();
-  const { ttl, limit } = config;
   const filter = { _id: 0, __v: 0 };
   const cacheHit = hit => console.log(`Cache ${hit ? "hit" : "miss"}`);
   const secondsDiff = previousHit => (Date.now() - previousHit) / 1000;

@@ -16,7 +16,6 @@ app.use(morgan("dev"));
 app.use(bodyParser.json({ limit: config.bodyLimit }));
 
 // connect to db
-mongoose.Promise = global.Promise;
 mongoose
   .connect(config.db)
   .then(() => console.log("connected to db"))

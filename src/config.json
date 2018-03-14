@@ -2,6 +2,7 @@
   "port": 8080,
   "bodyLimit": "100kb",
   "db": "mongodb://localhost/cache",
+  "db_test": "mongodb://localhost/test",
   "ttl": 60,
   "limit": 5
 }
