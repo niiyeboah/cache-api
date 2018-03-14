@@ -24,29 +24,25 @@ export default config => {
       .then(count => {
         if (count < limit) {
           Entry.create(body, (err, entry) => {
-            if (err) next(err);
+            if (err) return next(err);
             res.json(body);
           });
         } else {
           console.log("Cache limit exceeded");
-          Entry.find()
-            .sort({ previousHit: 1 })
-            .limit(1)
-            .exec()
-            .then(([oldestEntry]) => {
-              console.log(`Overwriting key: "${oldestEntry.key}"`);
-              Entry.findOneAndUpdate({ key: oldestEntry.key }, body, (err, entry) => {
-                if (err) next(err);
-                res.json(body);
-              });
+          Entry.aggregate([{ $sort: { previousHit: 1 } }, { $limit: 1 }]).then(([oldestEntry]) => {
+            console.log(`Overwriting key: "${oldestEntry.key}"`);
+            Entry.findOneAndUpdate({ key: oldestEntry.key }, body, (err, entry) => {
+              if (err) return next(err);
+              res.json(body);
             });
+          });
         }
       });
   }
 
   /* GET ALL ENTRIES */
   cache.get("/", (req, res, next) => {
-    Entry.find({}, filter, (err, entries) => {
+    Entry.find({}, { ...filter, previousHit: 0 }, (err, entries) => {
       if (err) return next(err);
       res.json(entries);
     });
