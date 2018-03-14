@@ -1,0 +1,7 @@
+{
+  "port": 8080,
+  "bodyLimit": "100kb",
+  "db": "mongodb://localhost/cache",
+  "ttl": 60,
+  "limit": 5
+}
