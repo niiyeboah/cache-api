@@ -15,7 +15,7 @@ export default ({ ttl, limit }) => {
    */
   function ttlExceeded(previousHit) {
     let seconds = (Date.now() - previousHit) / 1000;
-    return seconds < ttl;
+    return seconds > ttl;
   }
 
   /**
@@ -68,10 +68,10 @@ export default ({ ttl, limit }) => {
         cacheHit(true);
         let body = { key, previousHit: Date.now() };
         if (ttlExceeded(entry.previousHit)) {
-          body.value = entry.value;
-        } else {
           console.log("TTL exceeded");
           body.value = loremIpsum();
+        } else {
+          body.value = entry.value;
         }
         Entry.findOneAndUpdate({ key }, body, (err, entry) => {
           if (err) return next(err);
