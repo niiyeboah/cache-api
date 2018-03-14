@@ -6,7 +6,17 @@ export default ({ ttl, limit }) => {
   const cache = Router();
   const filter = { _id: 0, __v: 0 };
   const cacheHit = hit => console.log(`Cache ${hit ? "hit" : "miss"}`);
-  const secondsDiff = previousHit => (Date.now() - previousHit) / 1000;
+
+  /**
+   * @description
+   * Check if the entry has exceeded the ttl.
+   * The ttl value is in seconds.
+   * @param {Date} previousHit
+   */
+  function ttlExceeded(previousHit) {
+    let seconds = (Date.now() - previousHit) / 1000;
+    return seconds < ttl;
+  }
 
   /**
    * @description
@@ -57,7 +67,7 @@ export default ({ ttl, limit }) => {
       } else {
         cacheHit(true);
         let body = { key, previousHit: Date.now() };
-        if (secondsDiff(entry.previousHit) < ttl) {
+        if (ttlExceeded(entry.previousHit)) {
           body.value = entry.value;
         } else {
           console.log("TTL exceeded");
